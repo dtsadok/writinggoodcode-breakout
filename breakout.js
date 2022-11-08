@@ -1,19 +1,26 @@
 //Ball properties
-var ballX;
-var ballY;
-var ballR = 20;
-var ballVelX;
-var ballVelY;
+var ball = {
+  x: null,
+  y: null,
+  r: 20,
+  vx: null,
+  vy: null
+};
 
-var paddleX;
-var paddleY;
-var paddleVelX;
-var paddleW = 80;
-var paddleH = 20;
-var paddleSpeed = 10;
+var paddle = {
+  x: null,
+  y: null,
+  vx: null,
+  w: 80,
+  h: 20,
+  speed: 10
+};
 
-var brickW = 25;
-var brickH = 10;
+var brick = {
+  w: 25,
+  h: 10
+};
+
 var brickRows = 4;
 var brickCols = 18;
 
@@ -26,14 +33,14 @@ var floorH = 25;
 function setup() {
   createCanvas(500, 500);
 
-  ballX = width/2;
-  ballY = height/2;
-  ballVelX = 5; //right
-  ballVelY = 5; //down
+  ball.x = width/2;
+  ball.y = height/2;
+  ball.vx = 5; //right
+  ball.vy = 5; //down
 
-  paddleX = width/2;
-  paddleY = height-100;
-  paddleVelX = 0;
+  paddle.x = width/2;
+  paddle.y = height-100;
+  paddle.vx = 0;
 
   for (let i=0; i < brickRows ; i++) {
     bricks[i] = [];
@@ -74,7 +81,7 @@ function draw() {
     reverseBallY();
   }
 
-  //debug ballX, ballY
+  //debug ball.x, ball.y
   debugBallCoords();
 
   //check if ball has collided with walls
@@ -104,17 +111,17 @@ function draw() {
 function keyPressed() {
   switch (keyCode) {
     case LEFT_ARROW:
-      paddleVelX = paddleX > 0 ? -paddleSpeed : 0;
+      paddle.vx = paddle.x > 0 ? -paddle.speed : 0;
       break;
 
     case RIGHT_ARROW:
-      paddleVelX = paddleX + paddleW < width ? paddleSpeed : 0;
+      paddle.vx = paddle.x + paddle.w < width ? paddle.speed : 0;
       break;
   }
 }
 
 function keyReleased() {
-  paddleVelX = 0;
+  paddle.vx = 0;
 }
 
 function clearScreen() {
@@ -162,7 +169,7 @@ function drawBall() {
   fill(127);
   noStroke();
 
-  ellipse(ballX, ballY, ballR);
+  ellipse(ball.x, ball.y, ball.r);
 }
 
 function drawBricks() {
@@ -171,17 +178,17 @@ function drawBricks() {
   for (let i=0; i < brickRows; i++) {
     for (let j=0; j < brickCols; j++) {
       if (bricks[i][j]) {
-        var brickX = wallW + j * brickW;
-        var brickY = i * brickH;
+        var brickX = wallW + j * brick.w;
+        var brickY = i * brick.h;
 
-        rect(brickX, brickY, brickW, brickH);
+        rect(brickX, brickY, brick.w, brick.h);
 
         //check if ball has collided with brick
-        if (ballX + ballR/2 > brickX && ballX - ballR/2 < brickX + brickW &&
-            ballY + ballR/2 > brickY && ballY - ballR/2 < brickY + brickH) {
+        if (ball.x + ball.r/2 > brickX && ball.x - ball.r/2 < brickX + brick.w &&
+            ball.y + ball.r/2 > brickY && ball.y - ball.r/2 < brickY + brick.h) {
             bricks[i][j] = false;
 
-            //reverseBallX();
+            //reverseballX();
             reverseBallY();
         }
       }
@@ -192,58 +199,58 @@ function drawBricks() {
 function drawPaddle() {
   stroke(0);
   noFill();
-  rect(paddleX, paddleY, paddleW, paddleH);
+  rect(paddle.x, paddle.y, paddle.w, paddle.h);
 }
 
 function checkBallPaddle() {
-  return ballX + ballR/2 > paddleX &&
-         ballX - ballR/2 < paddleX + paddleW &&
-         ballY + ballR/2 > paddleY &&
-         ballY - ballR/2 < paddleY + paddleH;
+  return ball.x + ball.r/2 > paddle.x &&
+         ball.x - ball.r/2 < paddle.x + paddle.w &&
+         ball.y + ball.r/2 > paddle.y &&
+         ball.y - ball.r/2 < paddle.y + paddle.h;
 }
 
 function debugBallCoords() {
   fill(0);
   stroke(0);
   textSize(32);
-  text("ballX: " + ballX, 100, 100);
-  text("ballY: " + ballY, 100, 150);
+  text("ball.x: " + ball.x, 100, 100);
+  text("ball.y: " + ball.y, 100, 150);
 }
 
 function checkLeftWall() {
-  return ballX - ballR/2 < wallW;
+  return ball.x - ball.r/2 < wallW;
 }
 
 function checkRightWall() {
-  return ballX + ballR/2 > width - wallW;
+  return ball.x + ball.r/2 > width - wallW;
 }
 
 function checkCeiling() {
-  return ballY - ballR/2 < 0;
+  return ball.y - ball.r/2 < 0;
 }
 
 function checkFloor() {
-  return ballY + ballR/2 > height - floorH;
+  return ball.y + ball.r/2 > height - floorH;
 }
 
 function moveBall() {
-  ballX += ballVelX;
-  ballY += ballVelY;
+  ball.x += ball.vx;
+  ball.y += ball.vy;
 }
 
 function movePaddle() {
-  paddleX += paddleVelX;
+  paddle.x += paddle.vx;
 }
 
 function reverseBallX() {
-  ballVelX = -ballVelX;
+  ball.vx = -ball.vx;
 }
 
 function reverseBallY() {
-  ballVelY = -ballVelY;
+  ball.vy = -ball.vy;
 }
 
 function stopBall() {
-  ballVelX = 0;
-  ballVelY = 0;
+  ball.vx = 0;
+  ball.vy = 0;
 }
