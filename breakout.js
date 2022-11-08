@@ -1,14 +1,27 @@
 //Ball properties
 var ballX;
 var ballY;
+var ballR = 20;
 var ballVelX;
 var ballVelY;
 
 var paddleX;
+var paddleY;
 var paddleVelX;
+var paddleW = 80;
+var paddleH = 20;
+var paddleSpeed = 10;
+
+var brickW = 25;
+var brickH = 10;
+var brickRows = 4;
+var brickCols = 18;
 
 //2D boolean array of whether bricks are there or not
 var bricks = [];
+
+var wallW = 25;
+var floorH = 25;
 
 function setup() {
   createCanvas(500, 500);
@@ -19,12 +32,13 @@ function setup() {
   ballVelY = 5; //down
 
   paddleX = width/2;
+  paddleY = height-100;
   paddleVelX = 0;
 
-  for (let i=0; i < 4 ; i++) {
+  for (let i=0; i < brickRows ; i++) {
     bricks[i] = [];
 
-    for (let j=0; j < 20 ; j++) {
+    for (let j=0; j < brickCols ; j++) {
       bricks[i][j] = true;
     }
   }
@@ -38,14 +52,14 @@ function draw() {
   fill(200);
 
   //draw walls
-  rect(0, 0, 25, height); //left wall
-  rect(width-25, 0, 25, height); //right wall
-  rect(0, height-25, width, 25); //floor
+  rect(0, 0, wallW, height); //left wall
+  rect(width-wallW, 0, wallW, height); //right wall
+  rect(0, height-floorH, width, floorH); //floor
 
   //check if there are any bricks left
   var bricksLeft = false;
-  for (let i=0; i < 4 ; i++) {
-    for (let j=0; j < 20 ; j++) {
+  for (let i=0; i < brickRows ; i++) {
+    for (let j=0; j < brickCols ; j++) {
       if (bricks[i][j]) {
         bricksLeft = true;
         break;
@@ -65,19 +79,22 @@ function draw() {
   }
 
   //draw ball
-  ellipse(ballX, ballY, 20);
+  ellipse(ballX, ballY, ballR);
 
   //draw bricks
   noFill();
   stroke(0);
-  for (let i=0; i < 4; i++) {
-    for (let j=0; j < 18; j++) {
+  for (let i=0; i < brickRows; i++) {
+    for (let j=0; j < brickCols; j++) {
       if (bricks[i][j]) {
-        rect(25 + j * 25, i * 10, 25, 10);
+        var brickX = wallW + j * brickW;
+        var brickY = i * brickH;
+
+        rect(brickX, brickY, brickW, brickH);
 
         //check if ball has collided with brick
-        if (ballX > j*25 - 10 && ballX < j*25 + 25 &&
-            ballY > i*10 - 10 && ballY < i*10 + 30) {
+        if (ballX + ballR/2 > brickX && ballX - ballR/2 < brickX + brickW &&
+            ballY + ballR/2 > brickY && ballY - ballR/2 < brickY + brickH) {
             bricks[i][j] = false;
 
             //ballVelX = -ballVelX;
@@ -90,11 +107,11 @@ function draw() {
   //draw paddle
   stroke(0);
   noFill();
-  rect(paddleX, height-100, 80, 20);
+  rect(paddleX, paddleY, paddleW, paddleH);
 
   //check if ball has collided with paddle
-  if (ballX > paddleX-5 && ballX < paddleX+85 &&
-      ballY > height-110 && ballY < height-100) {
+  if (ballX + ballR/2 > paddleX && ballX - ballR/2 < paddleX+paddleW &&
+      ballY + ballR/2 > paddleY && ballY - ballR/2 < paddleY+paddleH) {
       ballVelY = -ballVelY;
   }
 
@@ -106,17 +123,17 @@ function draw() {
   text("ballY: " + ballY, 100, 150);
 
   //check if ball has collided with walls
-  if (ballX < 35 || ballX > width-35) {
+  if (ballX - ballR/2 < wallW || ballX + ballR/2 > width - wallW) {
       ballVelX = -ballVelX;
   }
 
   //check if ball has collided with the ceiling
-  if (ballY < 10) {
+  if (ballY - ballR/2 < 0) {
       ballVelY = -ballVelY;
   }
 
   //check if ball has collided with floor
-  if (ballY > height-30) {
+  if (ballY + ballR/2 > height - floorH) {
     //ballVelX = 0;
     //ballVelY = 0;
 
@@ -133,11 +150,11 @@ function draw() {
 function keyPressed() {
   switch (keyCode) {
     case LEFT_ARROW:
-      paddleVelX = paddleX > 0 ? -10 : 0;
+      paddleVelX = paddleX > 0 ? -paddleSpeed : 0;
       break;
 
     case RIGHT_ARROW:
-      paddleVelX = paddleX < width-80 ? 10 : 0;
+      paddleVelX = paddleX + paddleW < width ? paddleSpeed : 0;
       break;
   }
 }
