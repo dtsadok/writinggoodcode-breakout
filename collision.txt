@@ -1,0 +1,6 @@
+from StackOverflow
+
+rectOneRight > rectTwoLeft &&
+rectOneLeft < rectTwoRight &&
+rectOneBottom > rectTwoTop &&
+rectOneTop < rectTwoBottom
