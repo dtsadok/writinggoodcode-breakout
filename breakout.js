@@ -12,7 +12,6 @@ var bricks = [];
 
 function setup() {
   createCanvas(500, 500);
-  //frameRate(60);
 
   ballX = width/2;
   ballY = height/2;
@@ -32,6 +31,7 @@ function setup() {
 }
 
 function draw() {
+  //clear screen
   background(255);
 
   noStroke();
@@ -57,7 +57,10 @@ function draw() {
     //draw victory screen
     background("green");
     fill(255);
-    text("You won!");
+    var message = "You won!";
+    var w = textWidth(message);
+    text(message, width/2 - w/2, height/2);
+
     return;
   }
 
@@ -65,7 +68,6 @@ function draw() {
   ellipse(ballX, ballY, 20);
 
   //draw bricks
-  /*
   noFill();
   stroke(0);
   for (let i=0; i < 4; i++) {
@@ -74,16 +76,16 @@ function draw() {
         rect(25 + j * 25, i * 10, 25, 10);
 
         //check if ball has collided with brick
-        if (ballX > j * 25 && ballX < j*25+25 &&
-            ballY > i*10 && ballY < i*10+10) {
+        if (ballX > j*25 - 10 && ballX < j*25 + 25 &&
+            ballY > i*10 - 10 && ballY < i*10 + 30) {
             bricks[i][j] = false;
-            ballX = -ballX;
-            ballY = -ballY;
+
+            //ballVelX = -ballVelX;
+            ballVelY = -ballVelY;
         }
       }
     }
   }
-  */
 
   //draw paddle
   stroke(0);
@@ -118,7 +120,6 @@ function draw() {
     //ballVelX = 0;
     //ballVelY = 0;
 
-    //ballVelX = -ballVelX;
     ballVelY = -ballVelY;
   }
 
@@ -132,11 +133,11 @@ function draw() {
 function keyPressed() {
   switch (keyCode) {
     case LEFT_ARROW:
-      paddleVelX = paddleX > 50 ? -10 : 0;
+      paddleVelX = paddleX > 0 ? -10 : 0;
       break;
 
     case RIGHT_ARROW:
-      paddleVelX = paddleX < width-50 ? 10 : 0;
+      paddleVelX = paddleX < width-80 ? 10 : 0;
       break;
   }
 }
