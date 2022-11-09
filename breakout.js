@@ -7,10 +7,14 @@ let ball = {
 
   //notice change from ball to this
   draw: function() {
+    push();
+
     fill(127);
     noStroke();
 
     ellipse(this.x, this.y, this.r);
+
+    pop();
   },
 
   move: function() {
@@ -32,12 +36,16 @@ let ball = {
   },
 
   debugCoords: function() {
+    push();
+
     fill(0);
     stroke(0);
     textSize(32);
 
     text("ball.x: " + this.x, 100, 100);
     text("ball.y: " + this.y, 100, 150);
+
+    pop();
   }
 };
 
@@ -50,10 +58,14 @@ let paddle = {
   speed: 10,
 
   draw: function() {
+    push();
+
     stroke(0);
     noFill();
 
     rect(this.x, this.y, this.w, this.h);
+
+    pop();
   },
 
   move: function() {
@@ -79,17 +91,25 @@ let wall = {
   w: 25,
 
   drawLeft: function() {
+    push();
+
     noStroke();
     fill(200);
 
     rect(0, 0, this.w, height);
+
+    pop();
   },
 
   drawRight: function() {
+    push();
+
     noStroke();
     fill(200);
 
     rect(width-this.w, 0, this.w, height);
+
+    pop();
   }
 };
 
@@ -97,10 +117,14 @@ let theFloor = {
   h: 25,
 
   draw: function() {
+    push();
+
     noStroke();
     fill(200);
 
     rect(0, height-this.h, width, this.h); //floor
+
+    pop();
   }
 };
 
@@ -113,6 +137,8 @@ let screen = {
   },
 
   drawVictory: function() {
+    push();
+
     background("green");
     fill(255);
 
@@ -120,6 +146,8 @@ let screen = {
     const w = textWidth(message);
 
     text(message, width/2 - w/2, height/2);
+
+    pop();
   }
 };
 
@@ -212,6 +240,8 @@ function checkForBricksLeft() {
 }
 
 function drawBricks() {
+  push();
+
   noFill();
   stroke(0);
 
@@ -234,6 +264,8 @@ function drawBricks() {
       }
     }
   }
+
+  pop();
 }
 
 function checkBallPaddle() {
