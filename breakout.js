@@ -2,17 +2,67 @@ let ball = {
   x: null,
   y: null,
   r: 20,
-  vx: null,
-  vy: null
+  vx: 5,
+  vy: 5,
+
+  //notice change from ball to this
+  draw: function() {
+    fill(127);
+    noStroke();
+
+    ellipse(this.x, this.y, this.r);
+  },
+
+  move: function() {
+    this.x += this.vx;
+    this.y += this.vy;
+  },
+
+  reverseX: function() {
+    this.vx = -this.vx;
+  },
+
+  reverseY: function() {
+    this.vy = -this.vy;
+  },
+
+  stop: function() {
+    this.vx = 0;
+    this.vy = 0;
+  },
+
+  debugCoords: function() {
+    fill(0);
+    stroke(0);
+    textSize(32);
+
+    text("ball.x: " + this.x, 100, 100);
+    text("ball.y: " + this.y, 100, 150);
+  }
 };
 
 let paddle = {
   x: null,
   y: null,
-  vx: null,
+  vx: 0,
   w: 80,
   h: 20,
-  speed: 10
+  speed: 10,
+
+  draw: function() {
+    stroke(0);
+    noFill();
+
+    rect(this.x, this.y, this.w, this.h);
+  },
+
+  move: function() {
+    this.x += this.vx;
+  },
+
+  stop: function() {
+    this.vx = 0;
+  }
 };
 
 let brick = {
@@ -20,24 +70,67 @@ let brick = {
   h: 10,
   rows: 4,
   cols: 18,
+
   //2D boolean array of whether bricks are there or not
   bricks: []
 };
 
-let wall = { w: 25 };
-let theFloor = { h: 25 };
+let wall = {
+  w: 25,
+
+  drawLeft: function() {
+    noStroke();
+    fill(200);
+
+    rect(0, 0, this.w, height);
+  },
+
+  drawRight: function() {
+    noStroke();
+    fill(200);
+
+    rect(width-this.w, 0, this.w, height);
+  }
+};
+
+let theFloor = {
+  h: 25,
+
+  draw: function() {
+    noStroke();
+    fill(200);
+
+    rect(0, height-this.h, width, this.h); //floor
+  }
+};
+
+let screen = {
+  w: 500,
+  h: 500,
+
+  clear: function() {
+    background(255);
+  },
+
+  drawVictory: function() {
+    background("green");
+    fill(255);
+
+    const message = "You won!";
+    const w = textWidth(message);
+
+    text(message, width/2 - w/2, height/2);
+  }
+};
 
 function setup() {
-  createCanvas(500, 500);
+  createCanvas(screen.w, screen.h);
 
   ball.x = width/2;
   ball.y = height/2;
-  ball.vx = 5; //right
-  ball.vy = 5; //down
 
   paddle.x = width/2;
   paddle.y = height-100;
-  paddle.vx = 0;
 
   for (let i=0; i < brick.rows ; i++) {
     brick.bricks[i] = [];
@@ -49,44 +142,44 @@ function setup() {
 }
 
 function draw() {
-  clearScreen();
+  screen.clear();
 
-  drawWalls();
-  drawFloor();
+  wall.drawLeft();
+  wall.drawRight();
+  theFloor.draw();
 
   if (checkForBricksLeft() === false) {
-    drawVictoryScreen();
+    screen.drawVictory();
 
     return;
   }
 
-  drawBall();
+  ball.draw();
   drawBricks();
-  drawPaddle();
+  paddle.draw();
 
   if (checkBallPaddle()) {
-    reverseBallY();
+    ball.reverseY();
   }
 
-  //debug ball.x, ball.y
-  debugBallCoords();
+  ball.debugCoords();
 
   if (checkLeftWall() || checkRightWall()) {
-      reverseBallX();
+      ball.reverseX();
   }
 
   if (checkCeiling()) {
-      reverseBallY();
+      ball.reverseY();
   }
 
   if (checkFloor()) {
-    //stopBall();
+    //ball.stop();
 
-    reverseBallY();
+    ball.reverseY();
   }
 
-  moveBall();
-  movePaddle();
+  ball.move();
+  paddle.move();
 }
 
 function keyPressed() {
@@ -102,26 +195,7 @@ function keyPressed() {
 }
 
 function keyReleased() {
-  paddle.vx = 0;
-}
-
-function clearScreen() {
-  background(255);
-}
-
-function drawWalls() {
-  noStroke();
-  fill(200);
-
-  rect(0, 0, wall.w, height); //left wall
-  rect(width-wall.w, 0, wall.w, height); //right wall
-}
-
-function drawFloor() {
-  noStroke();
-  fill(200);
-
-  rect(0, height-theFloor.h, width, theFloor.h); //floor
+  paddle.stop();
 }
 
 //check if there are any bricks left
@@ -135,23 +209,6 @@ function checkForBricksLeft() {
   }
 
   return false;
-}
-
-function drawVictoryScreen() {
-    background("green");
-    fill(255);
-
-    const message = "You won!";
-    const w = textWidth(message);
-
-    text(message, width/2 - w/2, height/2);
-}
-
-function drawBall() {
-  fill(127);
-  noStroke();
-
-  ellipse(ball.x, ball.y, ball.r);
 }
 
 function drawBricks() {
@@ -172,34 +229,18 @@ function drawBricks() {
             brick.bricks[i][j] = false;
 
             //reverseballX();
-            reverseBallY();
+            ball.reverseY();
         }
       }
     }
   }
 }
 
-function drawPaddle() {
-  stroke(0);
-  noFill();
-
-  rect(paddle.x, paddle.y, paddle.w, paddle.h);
-}
-
-//check if ball has collided with paddle
 function checkBallPaddle() {
   return ball.x + ball.r/2 > paddle.x &&
          ball.x - ball.r/2 < paddle.x + paddle.w &&
          ball.y + ball.r/2 > paddle.y &&
          ball.y - ball.r/2 < paddle.y + paddle.h;
-}
-
-function debugBallCoords() {
-  fill(0);
-  stroke(0);
-  textSize(32);
-  text("ball.x: " + ball.x, 100, 100);
-  text("ball.y: " + ball.y, 100, 150);
 }
 
 //check if ball has collided with left wall
@@ -220,26 +261,4 @@ function checkCeiling() {
 //check if ball has collided with floor
 function checkFloor() {
   return ball.y + ball.r/2 > height - theFloor.h;
-}
-
-function moveBall() {
-  ball.x += ball.vx;
-  ball.y += ball.vy;
-}
-
-function movePaddle() {
-  paddle.x += paddle.vx;
-}
-
-function reverseBallX() {
-  ball.vx = -ball.vx;
-}
-
-function reverseBallY() {
-  ball.vy = -ball.vy;
-}
-
-function stopBall() {
-  ball.vx = 0;
-  ball.vy = 0;
 }
