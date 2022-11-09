@@ -1,5 +1,4 @@
-//Ball properties
-var ball = {
+let ball = {
   x: null,
   y: null,
   r: 20,
@@ -7,7 +6,7 @@ var ball = {
   vy: null
 };
 
-var paddle = {
+let paddle = {
   x: null,
   y: null,
   vx: null,
@@ -16,7 +15,7 @@ var paddle = {
   speed: 10
 };
 
-var brick = {
+let brick = {
   w: 25,
   h: 10,
   rows: 4,
@@ -25,8 +24,8 @@ var brick = {
   bricks: []
 };
 
-var wall = { w: 25 };
-var theFloor = { h: 25 };
+let wall = { w: 25 };
+let theFloor = { h: 25 };
 
 function setup() {
   createCanvas(500, 500);
@@ -50,31 +49,21 @@ function setup() {
 }
 
 function draw() {
-  //clear screen
   clearScreen();
 
-  //draw walls
   drawWalls();
   drawFloor();
 
-  //check if there are any bricks left
   if (checkForBricksLeft() === false) {
-    //draw victory screen
     drawVictoryScreen();
 
     return;
   }
 
-  //draw ball
   drawBall();
-
-  //draw bricks
   drawBricks();
-
-  //draw paddle
   drawPaddle();
 
-  //check if ball has collided with paddle
   if (checkBallPaddle()) {
     reverseBallY();
   }
@@ -82,27 +71,21 @@ function draw() {
   //debug ball.x, ball.y
   debugBallCoords();
 
-  //check if ball has collided with walls
   if (checkLeftWall() || checkRightWall()) {
       reverseBallX();
   }
 
-  //check if ball has collided with the ceiling
   if (checkCeiling()) {
       reverseBallY();
   }
 
-  //check if ball has collided with floor
   if (checkFloor()) {
     //stopBall();
 
     reverseBallY();
   }
 
-  //move ball
   moveBall();
-
-  //move paddle
   movePaddle();
 }
 
@@ -141,6 +124,7 @@ function drawFloor() {
   rect(0, height-theFloor.h, width, theFloor.h); //floor
 }
 
+//check if there are any bricks left
 function checkForBricksLeft() {
   for (let i=0; i < brick.rows; i++) {
     for (let j=0; j < brick.cols; j++) {
@@ -157,8 +141,8 @@ function drawVictoryScreen() {
     background("green");
     fill(255);
 
-    var message = "You won!";
-    var w = textWidth(message);
+    const message = "You won!";
+    const w = textWidth(message);
 
     text(message, width/2 - w/2, height/2);
 }
@@ -177,8 +161,8 @@ function drawBricks() {
   for (let i=0; i < brick.rows; i++) {
     for (let j=0; j < brick.cols; j++) {
       if (brick.bricks[i][j]) {
-        var brickX = wall.w + j * brick.w;
-        var brickY = i * brick.h;
+        const brickX = wall.w + j * brick.w;
+        const brickY = i * brick.h;
 
         rect(brickX, brickY, brick.w, brick.h);
 
@@ -218,18 +202,22 @@ function debugBallCoords() {
   text("ball.y: " + ball.y, 100, 150);
 }
 
+//check if ball has collided with left wall
 function checkLeftWall() {
   return ball.x - ball.r/2 < wall.w;
 }
 
+//check if ball has collided with right wall
 function checkRightWall() {
   return ball.x + ball.r/2 > width - wall.w;
 }
 
+//check if ball has collided with the ceiling
 function checkCeiling() {
   return ball.y - ball.r/2 < 0;
 }
 
+//check if ball has collided with floor
 function checkFloor() {
   return ball.y + ball.r/2 > height - theFloor.h;
 }
