@@ -17,17 +17,25 @@ let ball = {
     pop();
   },
 
-  move: function() {
+  moveLeft: function() {
+    ball.vx = -Math.abs(ball.vx);
+  },
+
+  moveRight: function() {
+    ball.vx = Math.abs(ball.vx);
+  },
+
+  moveUp: function() {
+    ball.vy = -Math.abs(ball.vy);
+  },
+
+  moveDown: function() {
+    ball.vy = Math.abs(ball.vy);
+  },
+
+  update: function() {
     this.x += this.vx;
     this.y += this.vy;
-  },
-
-  reverseX: function() {
-    this.vx = -this.vx;
-  },
-
-  reverseY: function() {
-    this.vy = -this.vy;
   },
 
   stop: function() {
@@ -68,7 +76,7 @@ let paddle = {
     pop();
   },
 
-  move: function() {
+  update: function() {
     this.x += this.vx;
   },
 
@@ -120,7 +128,8 @@ let bricks = {
               ball.y + ball.r/2 > brickY && ball.y - ball.r/2 < brickY + this.brick.h) {
               bricks.active[i][j] = false;
 
-              ball.reverseY();
+              ball.moveDown();
+              break;
           }
         }
       }
@@ -230,27 +239,31 @@ function draw() {
   paddle.draw();
 
   if (checkBallPaddle()) {
-    ball.reverseY();
+    ball.moveUp();
   }
 
   ball.debugCoords();
 
-  if (checkLeftWall() || checkRightWall()) {
-      ball.reverseX();
+  if (checkLeftWall()) {
+    ball.moveRight();
+  }
+
+  if (checkRightWall()) {
+    ball.moveLeft();
   }
 
   if (checkCeiling()) {
-      ball.reverseY();
+    ball.moveDown();
   }
 
   if (checkFloor()) {
     //ball.stop();
 
-    ball.reverseY();
+    ball.moveUp();
   }
 
-  ball.move();
-  paddle.move();
+  ball.update();
+  paddle.update();
 }
 
 function keyPressed() {
