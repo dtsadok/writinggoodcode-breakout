@@ -1,76 +1,69 @@
-//these will be initialized in setup()
-let screen;
-let ball;
-let paddle;
-let bricks;
-let leftWall;
-let rightWall;
-let theFloor;
+let game = {};
 
 function setup() {
   createCanvas(500, 500);
 
-  screen = new Screen();
+  game.screen = new Screen();
 
-  leftWall = new Wall("left", 25);
-  rightWall = new Wall("right", 25);
-  theFloor = new Floor(25);
+  game.leftWall = new Wall("left", 25);
+  game.rightWall = new Wall("right", 25);
+  game.floor = new Floor(25);
 
-  ball = new Ball(width/2, height/2);
-  paddle = new Paddle(width/2, height-100);
-  bricks = new Bricks(4, 18, 25, 10);
+  game.ball = new Ball(width/2, height/2);
+  game.paddle = new Paddle(width/2, height-100);
+  game.bricks = new Bricks(4, 18, 25, 10);
 }
 
 function draw() {
-  screen.clear();
+  game.screen.clear();
 
-  if (bricks.anyLeft() === false) {
-    screen.drawVictory();
+  if (game.bricks.anyLeft() === false) {
+    game.screen.drawVictory();
 
     return;
   }
 
-  leftWall.draw();
-  rightWall.draw();
-  theFloor.draw();
-  ball.draw();
-  bricks.draw();
-  paddle.draw();
+  game.leftWall.draw();
+  game.rightWall.draw();
+  game.floor.draw();
+  game.ball.draw();
+  game.bricks.draw();
+  game.paddle.draw();
 
-  ball.debugCoords();
+  game.ball.debugCoords();
 
-  if (Collisions.checkBallPaddle()) {
-    ball.moveUp();
+  if (Collisions.checkBallPaddle(game.ball, game.paddle)) {
+    game.ball.moveUp();
   }
 
-  if (Collisions.checkLeftWall()) {
-    ball.moveRight();
+  if (Collisions.checkLeftWall(game.ball, game.leftWall)) {
+    game.ball.moveRight();
   }
 
-  if (Collisions.checkRightWall()) {
-    ball.moveLeft();
+  if (Collisions.checkRightWall(game.ball, game.rightWall)) {
+    game.ball.moveLeft();
   }
 
-  if (Collisions.checkCeiling()) {
-    ball.moveDown();
+  if (Collisions.checkCeiling(game.ball)) {
+    game.ball.moveDown();
   }
 
-  if (Collisions.checkFloor()) {
+  if (Collisions.checkFloor(game.ball, game.floor)) {
     //ball.stop();
 
-    ball.moveUp();
+    game.ball.moveUp();
   }
 
-  for (let i=0; i < bricks.rows; i++) {
-    for (let j=0; j < bricks.cols; j++) {
-      if (bricks.active[i][j]) {
-        const brickX = leftWall.w + j * bricks.brick.w;
-        const brickY = i * bricks.brick.h;
+  for (let i=0; i < game.bricks.rows; i++) {
+    for (let j=0; j < game.bricks.cols; j++) {
+      if (game.bricks.active[i][j]) {
+        const brickX = game.leftWall.w + j * game.bricks.brick.w;
+        const brickY = i * game.bricks.brick.h;
 
         //check if ball has collided with brick
-        if (Collisions.checkBrick(brickX, brickY)) {
-            bricks.active[i][j] = false;
-            ball.moveDown();
+        if (Collisions.checkBrick(game.ball, brickX, brickY)) {
+            game.bricks.active[i][j] = false;
+            game.ball.moveDown();
 
             break;
         }
@@ -78,22 +71,22 @@ function draw() {
     }
   }
 
-  ball.update();
-  paddle.update();
+  game.ball.update();
+  game.paddle.update();
 }
 
 function keyPressed() {
   switch (keyCode) {
     case LEFT_ARROW:
-      paddle.moveLeft();
+      game.paddle.moveLeft();
       break;
 
     case RIGHT_ARROW:
-      paddle.moveRight();
+      game.paddle.moveRight();
       break;
   }
 }
 
 function keyReleased() {
-  paddle.stop();
+  game.paddle.stop();
 }

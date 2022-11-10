@@ -37,7 +37,7 @@ class Bricks {
     for (let i=0; i < this.rows; i++) {
       for (let j=0; j < this.cols; j++) {
         if (this.active[i][j]) {
-          const brickX = leftWall.w + j * this.brick.w;
+          const brickX = game.leftWall.w + j * this.brick.w;
           const brickY = i * this.brick.h;
 
           this.drawBrick(brickX, brickY);
