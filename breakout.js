@@ -124,8 +124,7 @@ let bricks = {
           rect(brickX, brickY, this.brick.w, this.brick.h);
 
           //check if ball has collided with brick
-          if (ball.x + ball.r/2 > brickX && ball.x - ball.r/2 < brickX + this.brick.w &&
-              ball.y + ball.r/2 > brickY && ball.y - ball.r/2 < brickY + this.brick.h) {
+          if (collisions.checkBrick(brickX, brickY)) {
               bricks.active[i][j] = false;
 
               ball.moveDown();
@@ -307,4 +306,9 @@ function checkCeiling() {
 //check if ball has collided with floor
 function checkFloor() {
   return ball.y + ball.r/2 > height - theFloor.h;
+}
+
+function checkBrick(brickX, brickY) {
+  return ball.x + ball.r/2 > brickX && ball.x - ball.r/2 < brickX + bricks.brick.w &&
+         ball.y + ball.r/2 > brickY && ball.y - ball.r/2 < brickY + bricks.brick.h;
 }
