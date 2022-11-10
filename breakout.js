@@ -202,6 +202,40 @@ let screen = {
   }
 };
 
+let collisions = {
+  checkBallPaddle: function() {
+    return ball.x + ball.r/2 > paddle.x &&
+           ball.x - ball.r/2 < paddle.x + paddle.w &&
+           ball.y + ball.r/2 > paddle.y &&
+           ball.y - ball.r/2 < paddle.y + paddle.h;
+  },
+
+  //check if ball has collided with left wall
+  checkLeftWall: function() {
+    return ball.x - ball.r/2 < wall.w;
+  },
+
+  //check if ball has collided with right wall
+  checkRightWall: function() {
+    return ball.x + ball.r/2 > width - wall.w;
+  },
+
+  //check if ball has collided with the ceiling
+  checkCeiling: function() {
+    return ball.y - ball.r/2 < 0;
+  },
+
+  //check if ball has collided with floor
+  checkFloor: function() {
+    return ball.y + ball.r/2 > height - theFloor.h;
+  },
+
+  checkBrick: function(brickX, brickY) {
+    return ball.x + ball.r/2 > brickX && ball.x - ball.r/2 < brickX + bricks.brick.w &&
+           ball.y + ball.r/2 > brickY && ball.y - ball.r/2 < brickY + bricks.brick.h;
+  }
+};
+
 function setup() {
   createCanvas(screen.w, screen.h);
 
@@ -237,25 +271,25 @@ function draw() {
   bricks.draw();
   paddle.draw();
 
-  if (checkBallPaddle()) {
+  if (collisions.checkBallPaddle()) {
     ball.moveUp();
   }
 
   ball.debugCoords();
 
-  if (checkLeftWall()) {
+  if (collisions.checkLeftWall()) {
     ball.moveRight();
   }
 
-  if (checkRightWall()) {
+  if (collisions.checkRightWall()) {
     ball.moveLeft();
   }
 
-  if (checkCeiling()) {
+  if (collisions.checkCeiling()) {
     ball.moveDown();
   }
 
-  if (checkFloor()) {
+  if (collisions.checkFloor()) {
     //ball.stop();
 
     ball.moveUp();
@@ -279,36 +313,4 @@ function keyPressed() {
 
 function keyReleased() {
   paddle.stop();
-}
-
-function checkBallPaddle() {
-  return ball.x + ball.r/2 > paddle.x &&
-         ball.x - ball.r/2 < paddle.x + paddle.w &&
-         ball.y + ball.r/2 > paddle.y &&
-         ball.y - ball.r/2 < paddle.y + paddle.h;
-}
-
-//check if ball has collided with left wall
-function checkLeftWall() {
-  return ball.x - ball.r/2 < wall.w;
-}
-
-//check if ball has collided with right wall
-function checkRightWall() {
-  return ball.x + ball.r/2 > width - wall.w;
-}
-
-//check if ball has collided with the ceiling
-function checkCeiling() {
-  return ball.y - ball.r/2 < 0;
-}
-
-//check if ball has collided with floor
-function checkFloor() {
-  return ball.y + ball.r/2 > height - theFloor.h;
-}
-
-function checkBrick(brickX, brickY) {
-  return ball.x + ball.r/2 > brickX && ball.x - ball.r/2 < brickX + bricks.brick.w &&
-         ball.y + ball.r/2 > brickY && ball.y - ball.r/2 < brickY + bricks.brick.h;
 }
