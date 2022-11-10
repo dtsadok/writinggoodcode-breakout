@@ -77,14 +77,57 @@ let paddle = {
   }
 };
 
-let brick = {
-  w: 25,
-  h: 10,
+let bricks = {
   rows: 4,
   cols: 18,
 
   //2D boolean array of whether bricks are there or not
-  bricks: []
+  active: [],
+
+  brick: {
+    w: 25,
+    h: 10,
+  },
+
+  anyLeft: function() {
+    for (let i=0; i < this.rows; i++) {
+      for (let j=0; j < this.cols; j++) {
+        if (this.active[i][j]) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  },
+
+  draw: function() {
+    push();
+
+    noFill();
+    stroke(0);
+
+    for (let i=0; i < this.rows; i++) {
+      for (let j=0; j < this.cols; j++) {
+        if (this.active[i][j]) {
+          const brickX = wall.w + j * this.brick.w;
+          const brickY = i * this.brick.h;
+
+          rect(brickX, brickY, this.brick.w, this.brick.h);
+
+          //check if ball has collided with brick
+          if (ball.x + ball.r/2 > brickX && ball.x - ball.r/2 < brickX + this.brick.w &&
+              ball.y + ball.r/2 > brickY && ball.y - ball.r/2 < brickY + this.brick.h) {
+              bricks.active[i][j] = false;
+
+              ball.reverseY();
+          }
+        }
+      }
+    }
+
+    pop();
+  }
 };
 
 let wall = {
@@ -160,11 +203,11 @@ function setup() {
   paddle.x = width/2;
   paddle.y = height-100;
 
-  for (let i=0; i < brick.rows ; i++) {
-    brick.bricks[i] = [];
+  for (let i=0; i < bricks.rows ; i++) {
+    bricks.active[i] = [];
 
-    for (let j=0; j < brick.cols ; j++) {
-      brick.bricks[i][j] = true;
+    for (let j=0; j < bricks.cols ; j++) {
+      bricks.active[i][j] = true;
     }
   }
 }
@@ -176,14 +219,14 @@ function draw() {
   wall.drawRight();
   theFloor.draw();
 
-  if (checkForBricksLeft() === false) {
+  if (bricks.anyLeft() === false) {
     screen.drawVictory();
 
     return;
   }
 
   ball.draw();
-  drawBricks();
+  bricks.draw();
   paddle.draw();
 
   if (checkBallPaddle()) {
@@ -224,48 +267,6 @@ function keyPressed() {
 
 function keyReleased() {
   paddle.stop();
-}
-
-//check if there are any bricks left
-function checkForBricksLeft() {
-  for (let i=0; i < brick.rows; i++) {
-    for (let j=0; j < brick.cols; j++) {
-      if (brick.bricks[i][j]) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-function drawBricks() {
-  push();
-
-  noFill();
-  stroke(0);
-
-  for (let i=0; i < brick.rows; i++) {
-    for (let j=0; j < brick.cols; j++) {
-      if (brick.bricks[i][j]) {
-        const brickX = wall.w + j * brick.w;
-        const brickY = i * brick.h;
-
-        rect(brickX, brickY, brick.w, brick.h);
-
-        //check if ball has collided with brick
-        if (ball.x + ball.r/2 > brickX && ball.x - ball.r/2 < brickX + brick.w &&
-            ball.y + ball.r/2 > brickY && ball.y - ball.r/2 < brickY + brick.h) {
-            brick.bricks[i][j] = false;
-
-            //reverseballX();
-            ball.reverseY();
-        }
-      }
-    }
-  }
-
-  pop();
 }
 
 function checkBallPaddle() {
