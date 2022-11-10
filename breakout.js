@@ -95,18 +95,17 @@ let bricks = {
   brick: {
     w: 25,
     h: 10,
+    draw: function(brickX, brickY) {
+      rect(brickX, brickY, this.w, this.h);
+    }
   },
 
   anyLeft: function() {
-    for (let i=0; i < this.rows; i++) {
-      for (let j=0; j < this.cols; j++) {
-        if (this.active[i][j]) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+    //flat() will turn the array into a 1D array,
+    //and indexOf() here will look for the first
+    //true value in the flattened array.  If none
+    //found, it will return -1.
+    return this.active.flat().indexOf(true) > -1;
   },
 
   draw: function() {
@@ -121,14 +120,13 @@ let bricks = {
           const brickX = wall.w + j * this.brick.w;
           const brickY = i * this.brick.h;
 
-          rect(brickX, brickY, this.brick.w, this.brick.h);
+          this.brick.draw(brickX, brickY);
 
           //check if ball has collided with brick
           if (collisions.checkBrick(brickX, brickY)) {
               bricks.active[i][j] = false;
 
               ball.moveDown();
-              break;
           }
         }
       }
@@ -270,6 +268,23 @@ function draw() {
   ball.draw();
   bricks.draw();
   paddle.draw();
+
+  for (let i=0; i < bricks.rows; i++) {
+    for (let j=0; j < bricks.cols; j++) {
+      if (bricks.active[i][j]) {
+        const brickX = wall.w + j * this.brick.w;
+        const brickY = i * this.brick.h;
+
+        //check if ball has collided with brick
+        if (collisions.checkBrick(brickX, brickY)) {
+            bricks.active[i][j] = false;
+            ball.moveDown();
+
+            break;
+        }
+      }
+    }
+  }
 
   if (collisions.checkBallPaddle()) {
     ball.moveUp();
