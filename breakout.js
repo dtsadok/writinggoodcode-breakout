@@ -255,42 +255,24 @@ function setup() {
 function draw() {
   screen.clear();
 
-  wall.drawLeft();
-  wall.drawRight();
-  theFloor.draw();
-
   if (bricks.anyLeft() === false) {
     screen.drawVictory();
 
     return;
   }
 
+  wall.drawLeft();
+  wall.drawRight();
+  theFloor.draw();
   ball.draw();
   bricks.draw();
   paddle.draw();
 
-  for (let i=0; i < bricks.rows; i++) {
-    for (let j=0; j < bricks.cols; j++) {
-      if (bricks.active[i][j]) {
-        const brickX = wall.w + j * this.brick.w;
-        const brickY = i * this.brick.h;
-
-        //check if ball has collided with brick
-        if (collisions.checkBrick(brickX, brickY)) {
-            bricks.active[i][j] = false;
-            ball.moveDown();
-
-            break;
-        }
-      }
-    }
-  }
+  ball.debugCoords();
 
   if (collisions.checkBallPaddle()) {
     ball.moveUp();
   }
-
-  ball.debugCoords();
 
   if (collisions.checkLeftWall()) {
     ball.moveRight();
@@ -308,6 +290,23 @@ function draw() {
     //ball.stop();
 
     ball.moveUp();
+  }
+
+  for (let i=0; i < bricks.rows; i++) {
+    for (let j=0; j < bricks.cols; j++) {
+      if (bricks.active[i][j]) {
+        const brickX = wall.w + j * bricks.brick.w;
+        const brickY = i * bricks.brick.h;
+
+        //check if ball has collided with brick
+        if (collisions.checkBrick(brickX, brickY)) {
+            bricks.active[i][j] = false;
+            ball.moveDown();
+
+            break;
+        }
+      }
+    }
   }
 
   ball.update();
